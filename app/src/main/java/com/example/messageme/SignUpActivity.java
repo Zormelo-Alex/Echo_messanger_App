@@ -1,7 +1,6 @@
 package com.example.messageme;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,11 +15,10 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
-import com.example.messageme.R;
-import com.example.messageme.databinding.ActivitySignInBinding;
 import com.example.messageme.databinding.ActivitySignUpBinding;
 import com.example.messageme.utilities.Constants;
 import com.example.messageme.utilities.PreferenceManager;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
@@ -61,29 +59,29 @@ public class SignUpActivity extends AppCompatActivity {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
     private void signUp(){
-//        loading(true);
-//        FirebaseFirestore database = FirebaseFirestore.getInstance();
-//        HashMap<String, Object> user = new HashMap<>();
-//        user.put(Constants.KEY_NAME, binding.inputUsername.getText().toString());
-//        user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
-//        user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
-//        user.put(Constants.KEY_IMAGE, encodeImage);
-//        database.collection(Constants.KEY_COLLECTION_USERS)
-//                .add(user)
-//                .addOnSuccessListener(documentReference -> {
-//                    loading(false);
-//                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-//                    preferenceManager.putString(Constants.KEY_USER_ID, documentReference.getId());
-//                    preferenceManager.putString(Constants.KEY_NAME, binding.inputUsername.getText().toString());
-//                    preferenceManager.putString(Constants.KEY_IMAGE, encodeImage);
-//                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-//                    startActivity(intent);
-//                })
-//                .addOnFailureListener(exeption -> {
-//                    loading(false);
-//                    showToast(exeption.getMessage());
-//                });
+        loading(true);
+        FirebaseFirestore database = FirebaseFirestore.getInstance();
+        HashMap<String, Object> user = new HashMap<>();
+        user.put(Constants.KEY_NAME, binding.inputUsername.getText().toString());
+        user.put(Constants.KEY_EMAIL, binding.inputEmail.getText().toString());
+        user.put(Constants.KEY_PASSWORD, binding.inputPassword.getText().toString());
+        user.put(Constants.KEY_IMAGE, encodeImage);
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .add(user)
+                .addOnSuccessListener(documentReference -> {
+                    loading(false);
+                    preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
+                    preferenceManager.putString(Constants.KEY_USER_ID, documentReference.getId());
+                    preferenceManager.putString(Constants.KEY_NAME, binding.inputUsername.getText().toString());
+                    preferenceManager.putString(Constants.KEY_IMAGE, encodeImage);
+                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(exeption -> {
+                    loading(false);
+                    showToast(exeption.getMessage());
+                });
     }
     private String encodeImage(Bitmap bitmap){
         int previewWidth = 150;
@@ -132,7 +130,7 @@ public class SignUpActivity extends AppCompatActivity {
         }else if (binding.inputConfirmPassword.getText().toString().trim().isEmpty()) {
             showToast("Confirm your password");
             return false;
-        } else if (binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
+        } else if (!binding.inputPassword.getText().toString().equals(binding.inputConfirmPassword.getText().toString())) {
             showToast("Password doesn't match");
             return false;
         }else{
